@@ -26,11 +26,13 @@ namespace RestaurantSimulation
     {
         public ObservableCollection<Customer> CustomerCollection { get; set; }
         public ObservableCollection<Tuple<string, double>> StatisticsCollection { get; set; }
+        public int CustomerCount { get; set; }
         public MainWindow()
         {
             Thread.CurrentThread.CurrentCulture = new CultureInfo("fa-IR");
             CustomerCollection = new ObservableCollection<Customer>();
             StatisticsCollection = new ObservableCollection<Tuple<string, double>>();
+            CustomerCount = 20;
 
             InitializeComponent();
 
@@ -77,7 +79,7 @@ namespace RestaurantSimulation
             serviceDurationPossibilties.ToList()
                 .ForEach(x => rs.AddServiceTimePossibility(x.Item1, x.Item2));
 
-            var customers = rs.Take(20).ToList();
+            var customers = rs.Take(CustomerCount).ToList();
             customers.ForEach(x => CustomerCollection.Add(x));
 
             var statistics = new[] {
@@ -87,7 +89,7 @@ namespace RestaurantSimulation
                 new { Title = "متوسط مدت خدمت‌دهی", Value = customers.ServiceAverage() },
                 new { Title = "متوسط مدت بین هر دو ورود", Value = customers.EnteringDiffAverage() },
                 new { Title = "متوسط مدت انتظار", Value = customers.WaitingAverage() },
-                new { Title = "متوسط مدت زمان حظور مشتری", Value = customers.CustomerInSystemAverage() },
+                new { Title = "متوسط مدت زمان حضور مشتری", Value = customers.CustomerInSystemAverage() },
             };
 
             statistics.ToList().ForEach(x => StatisticsCollection.Add(new Tuple<string, double>(x.Title, x.Value)));

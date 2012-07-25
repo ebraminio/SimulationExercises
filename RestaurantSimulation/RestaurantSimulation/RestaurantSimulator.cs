@@ -163,8 +163,8 @@ namespace RestaurantSimulation
 
             foreach (var property in typeof(Customer).GetProperties())
             {
-                int x = (int)property.GetValue(this);
-                int y = (int)property.GetValue(obj);
+                int x = (int)property.GetValue(this, null);
+                int y = (int)property.GetValue(obj, null);
 
                 if (x != y)
                     return false;
