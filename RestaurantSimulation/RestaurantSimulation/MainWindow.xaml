@@ -1,8 +1,71 @@
-﻿<Window x:Class="RestaurantSimulation.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        <ListBox Name="listBox" HorizontalAlignment="Left" Height="162" Margin="10,10,0,0" VerticalAlignment="Top" Width="411" />
+﻿<Controls:MetroWindow
+    x:Class="RestaurantSimulation.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}"
+    Title="تمرین درس شبیه‌سازی" Height="600" Width="1000" FlowDirection="RightToLeft">   
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colours.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    
+    <Grid Name="LayoutRoot">
+        <ListView Width="646"
+            Margin="10,10,0,10"
+            ItemsSource="{Binding CustomerCollection}" HorizontalAlignment="Left">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Width="70" DisplayMemberBinding="{Binding Id}">
+                        <AccessText Text="مشتری" TextWrapping="Wrap" TextAlignment="Center" />
+                    </GridViewColumn>
+                    <GridViewColumn Width="70" DisplayMemberBinding="{Binding PreviousArrivalDiff}">
+                        <AccessText Text="مدت سپری شده از آخرین ورود (دقیقه)" TextWrapping="Wrap" TextAlignment="Center" Width="70" />
+                    </GridViewColumn>
+                    <GridViewColumn Width="70" DisplayMemberBinding="{Binding ArrivalTime}">
+                        <AccessText Text="زمان ورود" TextWrapping="Wrap" TextAlignment="Center"/>
+                    </GridViewColumn>
+                    <GridViewColumn Width="70" DisplayMemberBinding="{Binding ServiceDuration}">
+                        <AccessText Text="مدت خدمت‌دهی (دقیقه)" TextWrapping="Wrap" TextAlignment="Center"/>
+                    </GridViewColumn>
+                    <GridViewColumn Width="70" DisplayMemberBinding="{Binding ServiceStart}">
+                        <AccessText Text="زمان شروع خدمت" TextWrapping="Wrap" TextAlignment="Center"/>
+                    </GridViewColumn>
+                    <GridViewColumn Width="70" DisplayMemberBinding="{Binding WaitingTime}">
+                        <AccessText Text="زمان ماندن مشتری در صف (دقیقه)" TextWrapping="Wrap" TextAlignment="Center"/>
+                    </GridViewColumn>
+                    <GridViewColumn Width="70" DisplayMemberBinding="{Binding ServiceEnd}">
+                        <AccessText Text="زمان پایان خدمت" TextWrapping="Wrap" TextAlignment="Center"/>
+                    </GridViewColumn>
+                    <GridViewColumn Width="70" DisplayMemberBinding="{Binding CustomerInSystemTime}">
+                        <AccessText Text="مدت ماندن مشتری در سیستم (دقیقه)" TextWrapping="Wrap" TextAlignment="Center"/>
+                    </GridViewColumn>
+                    <GridViewColumn Width="70" DisplayMemberBinding="{Binding NoCustomerTime}">
+                        <AccessText Text="مدت بیکاری خدمت‌دهنده" TextWrapping="Wrap" TextAlignment="Center"/>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <ListView Height="341" 
+                  Margin="665,10,10,0"
+                  VerticalAlignment="Top"
+                  ItemsSource="{Binding StatisticsCollection}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel>
+                        <TextBlock Text="{Binding Item1}" FontSize="20" />
+                        <TextBlock Text="{Binding Item2}" FontSize="14" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <Button Content="اجرا" HorizontalAlignment="Left" Margin="665,356,0,0" VerticalAlignment="Top" Width="75" Click="RunButtonClick"/>
     </Grid>
-</Window>
+</Controls:MetroWindow>

@@ -33,7 +33,7 @@ namespace RestaurantSimulation.Tests
                 .ToList()
                 .ForEach(x => rs.AddServiceTimePossibility(x.x, x.y));
 
-            var exceptedCustomersResult = new[] {
+            var expectedCustomersResult = new[] {
                 new Customer(1, 0, 0, 4, 0, 0, 4, 4, 0),
                 new Customer(2, 8, 8, 1, 8, 0, 9, 1, 4),
                 new Customer(3, 6, 14, 4, 14, 0, 18, 4, 5),
@@ -58,13 +58,10 @@ namespace RestaurantSimulation.Tests
 
             var customers = rs.Take(20).ToList();
 
-            exceptedCustomersResult
-                .Zip(customers, (x, y) =>
-                    {
-                        Assert.IsTrue(x.Equals(y));
-                        return 0;
-                    })
-                .ToList();
+            expectedCustomersResult
+                .Zip(customers, (x, y) => new { x, y })
+                .ToList()
+                .ForEach(x => Assert.AreEqual(x.x, x.y));
 
             Assert.AreEqual(2.8, customers.WaitingTimeAverage());
             Assert.AreEqual(0.65, customers.WaitedCustomersRatio());
