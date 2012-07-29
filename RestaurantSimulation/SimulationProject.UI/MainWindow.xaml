@@ -5,7 +5,7 @@
     xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:xctk="clr-namespace:Xceed.Wpf.Toolkit;assembly=WPFToolkit.Extended"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
-    Title="تمرین درس شبیه‌سازی" Height="600" Width="1000" FlowDirection="RightToLeft" Icon="waiting.ico">   
+    Title="پروژهٔ درس شبیه‌سازی" Height="600" Width="1000" FlowDirection="RightToLeft" Icon="waiting.ico">   
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

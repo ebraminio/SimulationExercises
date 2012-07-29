@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace RestaurantSimulation
+namespace SimulationProject
 {
-    public class RestaurantSimulator : IEnumerable<Customer>
+    public class RestaurantSimulator : Simulator<Customer>
     {
         private ItemPicker<int> _enteringDifference;
         private ItemPicker<int> _serviceTime;
@@ -27,7 +26,7 @@ namespace RestaurantSimulation
             _serviceTime.AddEntityPossibilty(serviceTime, possibility);
         }
 
-        public IEnumerator<Customer> GetEnumerator()
+        public override IEnumerator<Customer> GetEnumerator()
         {
             var enteringDifferenceEnumerator = _enteringDifference.GetEnumerator();
             var serviceTimeEnumerator = _serviceTime.GetEnumerator();
@@ -73,53 +72,48 @@ namespace RestaurantSimulation
                 previousServiceTime = currentServiceTime;
             }
         }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
     }
 
-    public static class CustomerEnumerableHelper
+    public static class CustomersHelper
     {
-        public static double WaitingTimeAverage(this ICollection<Customer> enumerable)
+        public static double WaitingTimeAverage(this ICollection<Customer> customers)
         {
-            return enumerable.Average(x => (double)x.WaitingTime);
+            return customers.Average(x => (double)x.WaitingTime);
         }
 
-        public static double WaitedCustomersRatio(this ICollection<Customer> enumerable)
+        public static double WaitedCustomersRatio(this ICollection<Customer> customers)
         {
-            return (double)enumerable.Count(x => x.WaitingTime != 0) /
-                (double)enumerable.Count();
+            return (double)customers.Count(x => x.WaitingTime != 0) /
+                (double)customers.Count();
         }
 
-        public static double NoCustomerRatio(this ICollection<Customer> enumerable)
+        public static double NoCustomerRatio(this ICollection<Customer> customers)
         {
-            return (double)enumerable.Sum(x => x.NoCustomerTime) /
-                (double)enumerable.Last().ServiceEnd;
+            return (double)customers.Sum(x => x.NoCustomerTime) /
+                (double)customers.Last().ServiceEnd;
         }
 
-        public static double ServiceAverage(this ICollection<Customer> enumerable)
+        public static double ServiceAverage(this ICollection<Customer> customers)
         {
-            return (double)enumerable.Average(x => (double)x.ServiceDuration);
+            return (double)customers.Average(x => (double)x.ServiceDuration);
         }
 
-        public static double EnteringDiffAverage(this ICollection<Customer> enumerable)
+        public static double EnteringDiffAverage(this ICollection<Customer> customers)
         {
-            return (double)enumerable.Sum(x => (double)x.PreviousArrivalDiff) / 
-                (double)(enumerable.Count() - 1);
+            return (double)customers.Sum(x => (double)x.PreviousArrivalDiff) / 
+                (double)(customers.Count() - 1);
         }
 
-        public static double WaitingAverage(this ICollection<Customer> enumerable)
+        public static double WaitingAverage(this ICollection<Customer> customers)
         {
-            return enumerable
+            return customers
                 .Where(x => x.WaitingTime != 0)
                 .Average(x => (double)x.WaitingTime);
         }
 
-        public static double CustomerInSystemAverage(this ICollection<Customer> enumerable)
+        public static double CustomerInSystemAverage(this ICollection<Customer> customers)
         {
-            return enumerable
+            return customers
                 .Average(x => x.CustomerInSystemTime);
         }
     }
@@ -178,89 +172,6 @@ namespace RestaurantSimulation
             hash = hash * 23 + base.GetHashCode();
             hash = hash * 23 + Id.GetHashCode();
             return hash;
-        }
-    }
-
-    public class ItemPicker<T> : IEnumerable<T>
-    {
-        private IEnumerator<double> _mantissaEnumerator;
-        public IDictionary<T, double> _possiblities { private set; get; }
-        public ItemPicker(IEnumerable<double> mantissaYielder)
-        {
-            _possiblities = new Dictionary<T, double>();
-            _mantissaEnumerator = mantissaYielder.GetEnumerator();
-        }
-
-        public void AddEntityPossibilty(T entity, double possibilty)
-        {
-            _possiblities.Add(entity, possibilty);
-        }
-
-        private T Yield()
-        {
-            var rand = _mantissaEnumerator.Current * _possiblities.Values.Sum();
-
-            foreach (var kv in _possiblities)
-            {
-                if (rand == 0)
-                {
-                    return kv.Key;
-                }
-                rand -= kv.Value;
-                if (rand <= 0)
-                {
-                    return kv.Key;
-                }
-            }
-            return default(T);
-        }
-
-        public IEnumerator<T> GetEnumerator()
-        {
-            while (_mantissaEnumerator.MoveNext())
-            {
-                yield return Yield();
-            }
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-    }
-
-    public class RandomMantissa : IEnumerable<double>
-    {
-        private Random _random = new Random();
-        public IEnumerator<double> GetEnumerator()
-        {
-            while (true)
-            {
-                yield return _random.NextDouble();
-            }
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-    }
-
-    public class FlipFlopMantissa : IEnumerable<double>
-    {
-        public IEnumerator<double> GetEnumerator()
-        {
-            bool _flag = false;
-            while (true)
-            {
-                _flag = !_flag;
-                yield return _flag ? 0 : 0.99;
-            }
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
     }
 }

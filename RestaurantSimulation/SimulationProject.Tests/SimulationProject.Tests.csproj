@@ -54,15 +54,15 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\RestaurantSimulation\RestaurantSimulation.csproj">
-      <Project>{7c01c369-9119-455e-9fe3-861a06420408}</Project>
-      <Name>RestaurantSimulation</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SimulationProject\SimulationProject.csproj">
+      <Project>{11dcc597-5a3e-44ee-9203-3cb3d02cc6d9}</Project>
+      <Name>SimulationProject</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

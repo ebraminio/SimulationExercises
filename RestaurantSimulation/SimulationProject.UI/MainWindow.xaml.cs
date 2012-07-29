@@ -16,6 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MahApps.Metro.Controls;
+using SimulationProject;
 
 namespace RestaurantSimulation
 {
@@ -80,9 +81,11 @@ namespace RestaurantSimulation
                 .ForEach(x => rs.AddServiceTimePossibility(x.Item1, x.Item2));
 
             var customers = rs.Take(CustomerCount).ToList();
+            
             customers.ForEach(x => CustomerCollection.Add(x));
 
-            var statistics = new[] {
+            var statistics = new[]
+            {
                 new { Title = "متوسط مدت انتظار هر مشتری", Value = customers.WaitingTimeAverage() },
                 new { Title = "احتمال مجبور شدن مشتری به انتظار", Value = customers.WaitedCustomersRatio() },
                 new { Title = "نسبت بیکاری خدمت‌دهنده", Value = customers.NoCustomerRatio() },

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RestaurantSimulation;
+using SimulationProject;
 
 namespace RestaurantSimulation.Tests
 {
@@ -12,11 +13,13 @@ namespace RestaurantSimulation.Tests
         [TestMethod]
         public void RestaurantSimulation_Test()
         {
-            var enterDiffRandomNumbers = new[] {
+            var enterDiffRandomNumbers = new[]
+            {
                 0, .913, .727, .015, .948, .309, .922, .753, .235, .302,
                 .109, .093, .607, .738, .359, .888, .106, .212, .393, .535,
             };
-            var serviceRandomNumbers = new[] {
+            var serviceRandomNumbers = new[]
+            {
                 .84, .10, .74, .53, .17, .79, .91, .67, .89, .38,
                 .32, .94, .79, .05, /*.79*/.94, .84, .52, .55, .30, .50,
             };
@@ -33,7 +36,8 @@ namespace RestaurantSimulation.Tests
                 .ToList()
                 .ForEach(x => rs.AddServiceTimePossibility(x.x, x.y));
 
-            var expectedCustomersResult = new[] {
+            var expectedCustomersResult = new[]
+            {
                 new Customer(1, 0, 0, 4, 0, 0, 4, 4, 0),
                 new Customer(2, 8, 8, 1, 8, 0, 9, 1, 4),
                 new Customer(3, 6, 14, 4, 14, 0, 18, 4, 5),
@@ -77,14 +81,15 @@ namespace RestaurantSimulation.Tests
         {
             var picker = new ItemPicker<int>(new FlipFlopMantissa());
 
-            var arrivalDiffSample = new[] {
-                new { diff = 1, possibility = 0.125 },
-                new { diff = 2, possibility = 0.125 },
-                new { diff = 3, possibility = 0.125 },
+            var arrivalDiffSample = new[]
+            {
+                new { Diff = 1, Possibility = 0.125 },
+                new { Diff = 2, Possibility = 0.125 },
+                new { Diff = 3, Possibility = 0.125 },
             };
 
             arrivalDiffSample.ToList().ForEach(x =>
-                picker.AddEntityPossibilty(x.diff, x.possibility));
+                picker.AddEntityPossibilty(x.Diff, x.Possibility));
             
             new[] { 1, 3, 1, 3 }
                 .Zip(picker, (x, y) => new { x, y })

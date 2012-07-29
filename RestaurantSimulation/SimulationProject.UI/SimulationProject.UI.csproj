@@ -103,7 +103,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="RestaurantSimulator.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -148,7 +147,6 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
-    <None Include="RestaurantSimulation_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -177,6 +175,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="waiting.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SimulationProject\SimulationProject.csproj">
+      <Project>{11dcc597-5a3e-44ee-9203-3cb3d02cc6d9}</Project>
+      <Name>SimulationProject</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
