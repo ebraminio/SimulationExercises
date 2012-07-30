@@ -17,19 +17,16 @@ namespace SimulationProject.Tests
                 0, .26, .98, .90, .26, .42, .74, .80, .68, .22,
                 .48, .34, .45, .24, .34, .63, .38, .80, .42, .56,
                 .89, .18, .51, .71, .16, .92
-            };
+            }.AsEnumerable();
+
             var serviceRandomNumbers = new[]
             {
                 .95, .21, .51, .92, .89, .38, .13, .61, .50, .49,
                 .39, .53, .88, .01, .81, .54, .81, .64, .01, .67,
                 .01, .47, .75, .57, .87, .48
+            }.AsEnumerable();
 
-            }.AsEnumerable().GetEnumerator();
-
-            var simulator = new HabilKhabbazSimulator(
-                new ItemPicker<int>(enterDiffRandomNumbers.AsEnumerable().GetEnumerator()),
-                new ItemPicker<int>(serviceRandomNumbers),
-                new ItemPicker<int>(serviceRandomNumbers));
+            var simulator = new HabilKhabbazSimulator(enterDiffRandomNumbers, serviceRandomNumbers);
 
             simulator
                 .AddEnteringDifferencePossibility(1, .25)
@@ -68,33 +65,29 @@ namespace SimulationProject.Tests
                 new HabilKhabbazCustomer(17, 2, 37, Servant.Habil, 39, 4, 43, 2),
                 new HabilKhabbazCustomer(18, 3, 40, Servant.Khabbaz, 40, 5, 45, 0),
                 new HabilKhabbazCustomer(19, 2, 42, Servant.Habil, 43, 2, 45, 1),
-                new HabilKhabbazCustomer(20, 2, 44, Servant.Habil, 49, 4, 49, 1),
-                new HabilKhabbazCustomer(21, 4, 48, Servant.Khabbaz, 48, 3, 51, 1),
+                new HabilKhabbazCustomer(20, 2, 44, Servant.Habil, 45, 4, 49, 1),
+                new HabilKhabbazCustomer(21, 4, 48, Servant.Khabbaz, 48, 3, 51, 0),
                 new HabilKhabbazCustomer(22, 1, 49, Servant.Habil, 49, 3, 52, 0),
-                new HabilKhabbazCustomer(23, 2, 51, Servant.Khabbaz, 51, 4, 56, 0),
+                new HabilKhabbazCustomer(23, 2, 51, Servant.Khabbaz, 51, /*4*/5, 56, 0),
                 new HabilKhabbazCustomer(24, 3, 54, Servant.Habil, 54, 3, 57, 0),
                 new HabilKhabbazCustomer(25, 1, 55, Servant.Khabbaz, 56, 6, 62, 1),
                 new HabilKhabbazCustomer(26, 4, 59, Servant.Habil, 59, 3, 62, 0),
             };
 
             var simulatorEnumerator = simulator.GetEnumerator();
+            var customers = new List<HabilKhabbazCustomer>();
             foreach (var expectedResult in expectedCustomersResult)
             {
                 simulatorEnumerator.MoveNext();
                 Assert.AreEqual(expectedResult, simulatorEnumerator.Current);
-
-                // TODO: I must fix more than this
-                if (simulatorEnumerator.Current.Id == 16)  break;
+                customers.Add(simulatorEnumerator.Current);
             }
 
-            /*
-            Assert.AreEqual(2.8, customers.WaitingTimeAverage());
-            Assert.AreEqual(0.65, customers.WaitedCustomersRatio());
-            Assert.AreEqual(0.21, Math.Round(customers.NoCustomerRatio(), 2));
-            Assert.AreEqual(3.4, customers.ServiceAverage());
-            Assert.AreEqual(4.3, Math.Round(customers.EnteringDiffAverage(), 1));
-            Assert.AreEqual(4.3, Math.Round(customers.WaitingAverage(), 1));
-            Assert.AreEqual(6.2, customers.CustomerInSystemAverage());*/
+            Assert.AreEqual(.90, Math.Round(customers.ServantBusyRatio(Servant.Habil), 2));
+            Assert.AreEqual(.69, Math.Round(customers.ServantBusyRatio(Servant.Khabbaz), 2));
+            Assert.AreEqual(.35, Math.Round(customers.WaitedCustomersRatio(), 2));
+            Assert.AreEqual(.42, Math.Round(customers.WaitingTimeAverage(), 2));
+            Assert.AreEqual(1.22, Math.Round(customers.WaitedCustomersWaitingTimeAverage(), 2));
         }
     }
 }

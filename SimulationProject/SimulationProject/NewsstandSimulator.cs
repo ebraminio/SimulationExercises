@@ -16,14 +16,16 @@ namespace SimulationProject
         private int _newspaperPriceForBuy;
         private int _newspaperPriceForSell;
         private int _wasteNewspaperPrice;
-        public NewsstandSimulator(ItemPicker<DayType> dayTypePicker,
-            ItemPicker<int> goodDayRequestPicker, ItemPicker<int> mediumDayRequestPicker, ItemPicker<int> badDayRequestPicker,
+        public NewsstandSimulator(IEnumerable<double> dayTypeRandomNumbers, IEnumerable<double> requestRandomNumbers,
             int warehouseCapacity, int newspaperPriceForBuy, int newspaperPriceForSell, int wasteNewspaperPrice)
         {
-            _dayTypePicker = dayTypePicker;
-            _goodDayRequestPicker = goodDayRequestPicker;
-            _mediumDayRequestPicker = mediumDayRequestPicker;
-            _badDayRequestPicker = badDayRequestPicker;
+            _dayTypePicker = new ItemPicker<DayType>(dayTypeRandomNumbers.GetEnumerator());
+
+            var requestRandomNumbersEnumerator = requestRandomNumbers.GetEnumerator();
+            _goodDayRequestPicker = new ItemPicker<int>(requestRandomNumbersEnumerator);
+            _mediumDayRequestPicker = new ItemPicker<int>(requestRandomNumbersEnumerator);
+            _badDayRequestPicker = new ItemPicker<int>(requestRandomNumbersEnumerator);
+
             _warehouseCapacity = warehouseCapacity;
             _newspaperPriceForBuy = newspaperPriceForBuy;
             _newspaperPriceForSell = newspaperPriceForSell;
@@ -35,7 +37,7 @@ namespace SimulationProject
             _dayTypePicker.AddEntityPossibilty(dayType, possibility);
             return this;
         }
-        
+
         private ItemPicker<int> GetDayRequestPickerByDayType(DayType dayType)
         {
             switch (dayType)
@@ -128,6 +130,14 @@ namespace SimulationProject
             LostProfit = lostProfit;
             WasteNewspaperSell = wasteNewspaperSell;
             DailyProfit = dailyProfit;
+        }
+    }
+
+    public static class NewsstandWarehouseTools
+    {
+        public static double TotalProfit(this ICollection<NewsstandWarehouse> warehouse)
+        {
+            return warehouse.Sum(x => x.DailyProfit);
         }
     }
 }

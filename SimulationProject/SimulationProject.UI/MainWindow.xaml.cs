@@ -69,9 +69,7 @@ namespace SimulationProject.UI
             RemoveAll(CustomerCollection);
             RemoveAll(StatisticsCollection);
 
-            var rs = new RestaurantSimulator(
-                new ItemPicker<int>(new RandomMantissa().GetEnumerator()),
-                new ItemPicker<int>(new RandomMantissa().GetEnumerator()));
+            var rs = new RestaurantSimulator(new RandomMantissa(), new RandomMantissa());
 
             enteringDifferencePossibility.ToList()
                 .ForEach(x => rs.AddEnteringDifferencePossibility(x.Item1, x.Item2));

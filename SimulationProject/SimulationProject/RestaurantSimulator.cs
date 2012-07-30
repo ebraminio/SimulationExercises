@@ -9,21 +9,23 @@ namespace SimulationProject
     {
         private ItemPicker<int> _enteringDifference;
         private ItemPicker<int> _serviceTime;
-        public RestaurantSimulator(ItemPicker<int> enteringDifference,
-            ItemPicker<int> serviceTime)
+        public RestaurantSimulator(IEnumerable<double> enteringDifferenceRandomNumbers,
+            IEnumerable<double> serviceTimeRandomNumbers)
         {
-            _enteringDifference = enteringDifference;
-            _serviceTime = serviceTime;
+            _enteringDifference = new ItemPicker<int>(enteringDifferenceRandomNumbers.GetEnumerator());
+            _serviceTime = new ItemPicker<int>(serviceTimeRandomNumbers.GetEnumerator());
         }
 
-        public void AddEnteringDifferencePossibility(int enteringDiff, double possibility)
+        public RestaurantSimulator AddEnteringDifferencePossibility(int enteringDiff, double possibility)
         {
             _enteringDifference.AddEntityPossibilty(enteringDiff, possibility);
+            return this;
         }
 
-        public void AddServiceTimePossibility(int serviceTime, double possibility)
+        public RestaurantSimulator AddServiceTimePossibility(int serviceTime, double possibility)
         {
             _serviceTime.AddEntityPossibilty(serviceTime, possibility);
+            return this;
         }
 
         public override IEnumerator<RestaurantCustomer> GetEnumerator()
@@ -32,7 +34,6 @@ namespace SimulationProject
             var serviceTimeEnumerator = _serviceTime.GetEnumerator();
             var firstInQueue = true;
             int customerArrivalTime = 0;
-            int previousServiceTime = 0;
             int reservedQueue = 0;
             int customerId = 0;
             while (enteringDifferenceEnumerator.MoveNext()
@@ -47,7 +48,7 @@ namespace SimulationProject
                 }
 
                 int noCustomerTime = 0;
-                reservedQueue += previousServiceTime - currentEnter;
+                reservedQueue -= currentEnter;
                 if (reservedQueue < 0)
                 {
                     noCustomerTime = -reservedQueue;
@@ -68,8 +69,7 @@ namespace SimulationProject
                     CustomerInSystemTime = reservedQueue + currentServiceTime,
                     NoCustomerTime = noCustomerTime,
                 };
-
-                previousServiceTime = currentServiceTime;
+                reservedQueue += currentServiceTime;
             }
         }
     }

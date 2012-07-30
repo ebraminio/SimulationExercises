@@ -24,9 +24,7 @@ namespace SimulationProject.Tests
                 .32, .94, .79, .05, /*.79*/.94, .84, .52, .55, .30, .50,
             }.AsEnumerable();
 
-            var rs = new RestaurantSimulator(
-                new ItemPicker<int>(enterDiffRandomNumbers.GetEnumerator()),
-                new ItemPicker<int>(serviceRandomNumbers.GetEnumerator()));
+            var rs = new RestaurantSimulator(enterDiffRandomNumbers, serviceRandomNumbers);
 
             Enumerable.Range(1, 8).ToList().ForEach(x =>
                 rs.AddEnteringDifferencePossibility(x, .125));

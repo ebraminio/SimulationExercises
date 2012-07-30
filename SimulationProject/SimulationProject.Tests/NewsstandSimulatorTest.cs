@@ -24,13 +24,8 @@ namespace SimulationProject.Tests
                     .60, .29, .18, .90, .93, .73, .21, .45, .74, .96
                 }.AsEnumerable();
 
-            var requestRandomEnumerator = requestRandomNumbers.GetEnumerator();
 
-            var simulator = new NewsstandSimulator(
-                new ItemPicker<DayType>(dayTypeRandomNumbers.GetEnumerator()),
-                new ItemPicker<int>(requestRandomEnumerator),
-                new ItemPicker<int>(requestRandomEnumerator),
-                new ItemPicker<int>(requestRandomEnumerator),
+            var simulator = new NewsstandSimulator(dayTypeRandomNumbers, requestRandomNumbers,
                 70, 13, 20, 2);
 
             simulator
@@ -87,11 +82,15 @@ namespace SimulationProject.Tests
             };
 
             var simulatorEnumerator = simulator.GetEnumerator();
+            var results = new List<NewsstandWarehouse>();
             foreach (var expectedResult in expectedResults)
             {
                 simulatorEnumerator.MoveNext();
                 Assert.AreEqual(expectedResult, simulatorEnumerator.Current);
+                results.Add(simulatorEnumerator.Current);
             }
+
+            Assert.AreEqual(7260, results.TotalProfit());
         }
     }
 }

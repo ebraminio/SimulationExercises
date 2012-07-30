@@ -12,12 +12,14 @@ namespace SimulationProject
         private ItemPicker<int> _habilServiceTime;
         private ItemPicker<int> _khabbazServiceTime;
 
-        public HabilKhabbazSimulator(ItemPicker<int> enteringDifference,
-            ItemPicker<int> habilServiceTime, ItemPicker<int> khabbazServiceTime)
+        public HabilKhabbazSimulator(IEnumerable<double> enteringDifferencesRandomNumbers,
+            IEnumerable<double> serviceDurationRandomNumbers)
         {
-            _enteringDifference = enteringDifference;
-            _habilServiceTime = habilServiceTime;
-            _khabbazServiceTime = khabbazServiceTime;
+            _enteringDifference = new ItemPicker<int>(enteringDifferencesRandomNumbers.GetEnumerator());
+
+            var serviceDurationRandomNumbersEnumerator = serviceDurationRandomNumbers.GetEnumerator();
+            _habilServiceTime = new ItemPicker<int>(serviceDurationRandomNumbersEnumerator);
+            _khabbazServiceTime = new ItemPicker<int>(serviceDurationRandomNumbersEnumerator);
         }
 
         public HabilKhabbazSimulator AddEnteringDifferencePossibility(int enteringDiff, double possibility)
@@ -46,98 +48,41 @@ namespace SimulationProject
             var khabbazServiceTimeEnumerator = _khabbazServiceTime.GetEnumerator();
             var firstInQueue = true;
             int customerArrivalTime = 0;
-            int previousHabilServiceTime = 0;
-            int previousKhabbazServiceTime = 0;
-            int reservedHabilQueue = 0;
-            int reservedKhabbazQueue = 0;
+            int habilReservedQueue = 0;
+            int khabbazReservedQueue = 0;
             int customerId = 0;
             while (enteringDifferenceEnumerator.MoveNext())
             {
-                var currentEnter = enteringDifferenceEnumerator.Current;
+                Servant servant;
+                int currentEnter = enteringDifferenceEnumerator.Current;
                 if (firstInQueue == true)
                 {
                     firstInQueue = false;
                     currentEnter = 0;
                 }
+                int currentServiceTime;
 
-                if (customerId == 16)
-                    customerId = 16;
+                habilReservedQueue -= currentEnter;
+                if (habilReservedQueue < 0) habilReservedQueue = 0;
+                khabbazReservedQueue -= currentEnter;
+                if (khabbazReservedQueue < 0) khabbazReservedQueue = 0;
 
-                if (currentEnter >= previousHabilServiceTime + reservedHabilQueue)
+                if (habilReservedQueue <= khabbazReservedQueue) // `=` per priority
                 {
-                    reservedHabilQueue = 0;
-                    previousHabilServiceTime = 0;
-                }
-
-                if (currentEnter >= previousKhabbazServiceTime + reservedKhabbazQueue)
-                {
-                    reservedKhabbazQueue = 0;
-                    previousKhabbazServiceTime = 0;
-                }
-
-                if (customerId == 16)
-                    customerId = 16;
-
-                Servant servantTurn;
-                if (reservedHabilQueue + previousHabilServiceTime < 
-                    reservedKhabbazQueue + previousKhabbazServiceTime)
-                {
-                    servantTurn = Servant.Habil;
-                }
-                else if (reservedHabilQueue + previousHabilServiceTime > 
-                    reservedKhabbazQueue + previousKhabbazServiceTime)
-                {
-                    servantTurn = Servant.Khabbaz;
-                }
-                else // if (reservedHabilQueue + previousHabilServiceTime == reservedKhabbazQueue + previousKhabbazServiceTime)
-                {
-                    servantTurn = Servant.Habil; // priority
-                }
-                
-                int currentServiceTime = 0;
-                int reservedQueue = 0;
-                if (servantTurn == Servant.Habil)
-                {
-                    if (!habilServiceTimeEnumerator.MoveNext())
-                        break;
-
+                    servant = Servant.Habil;
+                    if (!habilServiceTimeEnumerator.MoveNext()) break;
                     currentServiceTime = habilServiceTimeEnumerator.Current;
-
-                    if (customerId == 14)
-                        customerId = 14;
-                    reservedHabilQueue += previousHabilServiceTime;
                 }
-                else
+                else // if (habilReservedQueue > khabbazReservedQueue)
                 {
-                    if (!khabbazServiceTimeEnumerator.MoveNext())
-                        break;
-
+                    servant = Servant.Khabbaz;
+                    if (!khabbazServiceTimeEnumerator.MoveNext()) break;
                     currentServiceTime = khabbazServiceTimeEnumerator.Current;
-
-                    reservedKhabbazQueue += previousKhabbazServiceTime;
                 }
 
-                reservedHabilQueue -= currentEnter;
-                if (reservedHabilQueue < 0)
-                {
-                    reservedHabilQueue = 0;
-                }
-                
-                reservedKhabbazQueue -= currentEnter;
-                if (reservedKhabbazQueue < 0)
-                {
-                    reservedKhabbazQueue = 0;
-                }
 
-                if (servantTurn == Servant.Habil)
-                {
-                    reservedQueue = reservedHabilQueue;
-                }
-                else
-                {
-                    reservedQueue = reservedKhabbazQueue;
-                }
 
+                var reservedQueue = (servant == Servant.Habil) ? habilReservedQueue : khabbazReservedQueue;
                 customerArrivalTime += currentEnter;
                 customerId++;
                 yield return new HabilKhabbazCustomer
@@ -145,33 +90,23 @@ namespace SimulationProject
                     Id = customerId,
                     PreviousArrivalDiff = currentEnter,
                     ArrivalTime = customerArrivalTime,
-                    Servant = servantTurn,
+                    Servant = servant,
                     ServiceStart = customerArrivalTime + reservedQueue,
                     ServiceDuration = currentServiceTime,
                     ServiceEnd = customerArrivalTime + reservedQueue + currentServiceTime,
                     WaitingTime = reservedQueue
                 };
 
-                previousHabilServiceTime -= currentEnter;
-                if (previousHabilServiceTime < 0)
+                if (servant == Servant.Habil)
                 {
-                    previousHabilServiceTime = 0;
+                    habilReservedQueue += currentServiceTime;
                 }
-                
-                previousKhabbazServiceTime -= currentEnter;
-                if (previousKhabbazServiceTime < 0)
+                else
                 {
-                    previousKhabbazServiceTime = 0;
+                    khabbazReservedQueue += currentServiceTime;
                 }
 
-                if (servantTurn == Servant.Habil)
-                {
-                    previousHabilServiceTime = currentServiceTime;
-                }
-                else if (servantTurn == Servant.Khabbaz)
-                {
-                    previousKhabbazServiceTime = currentServiceTime;
-                }
+
             }
         }
     }
@@ -205,5 +140,30 @@ namespace SimulationProject
     public enum Servant
     {
         Habil, Khabbaz
+    }
+
+    public static class HabilKhabbazCustomersTools
+    {
+        public static double ServantBusyRatio(this ICollection<HabilKhabbazCustomer> customers, Servant servant)
+        {
+            return (double)customers.Where(x => x.Servant == servant).Sum(x => x.ServiceDuration) /
+                (double)customers.Max(x => x.ServiceEnd);
+        }
+
+        public static double WaitedCustomersRatio(this ICollection<HabilKhabbazCustomer> customers)
+        {
+            return (double)customers.Count(x => x.WaitingTime != 0) /
+                (double)customers.Count();
+        }
+
+        public static double WaitingTimeAverage(this ICollection<HabilKhabbazCustomer> customers)
+        {
+            return customers.Average(x => (double)x.WaitingTime);
+        }
+
+        public static double WaitedCustomersWaitingTimeAverage(this ICollection<HabilKhabbazCustomer> customers)
+        {
+            return customers.Where(x => x.WaitingTime != 0).Average(x => (double)x.WaitingTime);
+        }
     }
 }
