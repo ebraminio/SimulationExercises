@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SimulationProject
 {
-    public class RestaurantSimulator : Simulator<Customer>
+    public class RestaurantSimulator : Simulator<RestaurantCustomer>
     {
         private ItemPicker<int> _enteringDifference;
         private ItemPicker<int> _serviceTime;
@@ -26,11 +26,11 @@ namespace SimulationProject
             _serviceTime.AddEntityPossibilty(serviceTime, possibility);
         }
 
-        public override IEnumerator<Customer> GetEnumerator()
+        public override IEnumerator<RestaurantCustomer> GetEnumerator()
         {
             var enteringDifferenceEnumerator = _enteringDifference.GetEnumerator();
             var serviceTimeEnumerator = _serviceTime.GetEnumerator();
-            bool firstInQueue = true;
+            var firstInQueue = true;
             int customerArrivalTime = 0;
             int previousServiceTime = 0;
             int reservedQueue = 0;
@@ -47,7 +47,7 @@ namespace SimulationProject
                 }
 
                 int noCustomerTime = 0;
-                reservedQueue = reservedQueue + previousServiceTime - currentEnter;               
+                reservedQueue += previousServiceTime - currentEnter;
                 if (reservedQueue < 0)
                 {
                     noCustomerTime = -reservedQueue;
@@ -56,7 +56,7 @@ namespace SimulationProject
 
                 customerArrivalTime += currentEnter;
                 customerId++;
-                yield return new Customer
+                yield return new RestaurantCustomer
                 {
                     Id = customerId,
                     ArrivalTime = customerArrivalTime,
@@ -74,53 +74,8 @@ namespace SimulationProject
         }
     }
 
-    public static class CustomersHelper
+    public class RestaurantCustomer : Entity
     {
-        public static double WaitingTimeAverage(this ICollection<Customer> customers)
-        {
-            return customers.Average(x => (double)x.WaitingTime);
-        }
-
-        public static double WaitedCustomersRatio(this ICollection<Customer> customers)
-        {
-            return (double)customers.Count(x => x.WaitingTime != 0) /
-                (double)customers.Count();
-        }
-
-        public static double NoCustomerRatio(this ICollection<Customer> customers)
-        {
-            return (double)customers.Sum(x => x.NoCustomerTime) /
-                (double)customers.Last().ServiceEnd;
-        }
-
-        public static double ServiceAverage(this ICollection<Customer> customers)
-        {
-            return (double)customers.Average(x => (double)x.ServiceDuration);
-        }
-
-        public static double EnteringDiffAverage(this ICollection<Customer> customers)
-        {
-            return (double)customers.Sum(x => (double)x.PreviousArrivalDiff) / 
-                (double)(customers.Count() - 1);
-        }
-
-        public static double WaitingAverage(this ICollection<Customer> customers)
-        {
-            return customers
-                .Where(x => x.WaitingTime != 0)
-                .Average(x => (double)x.WaitingTime);
-        }
-
-        public static double CustomerInSystemAverage(this ICollection<Customer> customers)
-        {
-            return customers
-                .Average(x => x.CustomerInSystemTime);
-        }
-    }
-
-    public class Customer
-    {
-        public int Id { get; set; }
         public int PreviousArrivalDiff { get; set; }
         public int ArrivalTime { get; set; }
         public int ServiceDuration { get; set; }
@@ -130,8 +85,8 @@ namespace SimulationProject
         public int CustomerInSystemTime { get; set; }
         public int NoCustomerTime { get; set; } // not related to customer directly
 
-        public Customer() { }
-        public Customer(int id, int previousArrivalDiff, int arrivalTime,
+        public RestaurantCustomer() { }
+        public RestaurantCustomer(int id, int previousArrivalDiff, int arrivalTime,
             int serviceDuration, int serviceStart, int waitingTime, int serviceEnd,
             int customerInSystemTime, int noCustomerTime)
         {
@@ -145,33 +100,50 @@ namespace SimulationProject
             CustomerInSystemTime = customerInSystemTime;
             NoCustomerTime = noCustomerTime;
         }
+    }
 
-        public override bool Equals(object obj)
+
+    public static class RestaurantCustomersTools
+    {
+        public static double WaitingTimeAverage(this ICollection<RestaurantCustomer> customers)
         {
-            if (this == obj)
-                return true;
-
-            Customer o = obj as Customer;
-            if (obj == null)
-                return false;
-
-            foreach (var property in typeof(Customer).GetProperties())
-            {
-                int x = (int)property.GetValue(this, null);
-                int y = (int)property.GetValue(obj, null);
-
-                if (x != y)
-                    return false;
-            }
-            return true;
+            return customers.Average(x => (double)x.WaitingTime);
         }
 
-        public override int GetHashCode()
+        public static double WaitedCustomersRatio(this ICollection<RestaurantCustomer> customers)
         {
-            int hash = 37;
-            hash = hash * 23 + base.GetHashCode();
-            hash = hash * 23 + Id.GetHashCode();
-            return hash;
+            return (double)customers.Count(x => x.WaitingTime != 0) /
+                (double)customers.Count();
+        }
+
+        public static double NoCustomerRatio(this ICollection<RestaurantCustomer> customers)
+        {
+            return (double)customers.Sum(x => x.NoCustomerTime) /
+                (double)customers.Last().ServiceEnd;
+        }
+
+        public static double ServiceAverage(this ICollection<RestaurantCustomer> customers)
+        {
+            return (double)customers.Average(x => (double)x.ServiceDuration);
+        }
+
+        public static double EnteringDiffAverage(this ICollection<RestaurantCustomer> customers)
+        {
+            return (double)customers.Sum(x => (double)x.PreviousArrivalDiff) /
+                (double)(customers.Count() - 1);
+        }
+
+        public static double WaitingAverage(this ICollection<RestaurantCustomer> customers)
+        {
+            return customers
+                .Where(x => x.WaitingTime != 0)
+                .Average(x => (double)x.WaitingTime);
+        }
+
+        public static double CustomerInSystemAverage(this ICollection<RestaurantCustomer> customers)
+        {
+            return customers
+                .Average(x => x.CustomerInSystemTime);
         }
     }
 }

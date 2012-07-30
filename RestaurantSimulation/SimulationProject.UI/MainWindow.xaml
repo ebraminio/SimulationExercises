@@ -1,27 +1,22 @@
-﻿<Controls:MetroWindow
-    x:Class="RestaurantSimulation.MainWindow"
+﻿<Window
+    x:Class="SimulationProject.UI.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:xctk="clr-namespace:Xceed.Wpf.Toolkit;assembly=WPFToolkit.Extended"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
-    Title="پروژهٔ درس شبیه‌سازی" Height="600" Width="1000" FlowDirection="RightToLeft" Icon="waiting.ico">   
-    <Window.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colours.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Window.Resources>
-    
+    Title="پروژهٔ درس شبیه‌سازی"
+    Height="600"
+    Width="1000"
+    FlowDirection="RightToLeft"
+    Icon="waiting.ico"
+    FontFamily="Nazli">
     <Grid Name="LayoutRoot">
-        <ListView Width="646"
+        
+        <ListView
+            Width="646"
             Margin="10,10,0,10"
-            ItemsSource="{Binding CustomerCollection}" HorizontalAlignment="Left">
+            ItemsSource="{Binding CustomerCollection}"
+            HorizontalAlignment="Left">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Width="70" DisplayMemberBinding="{Binding Id}">
@@ -54,22 +49,23 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <ListView Height="341" 
-                  Margin="665,10,10,0"
-                  VerticalAlignment="Top"
-                  ItemsSource="{Binding StatisticsCollection}">
+        <ListView
+            Height="408" 
+            Margin="665,10,10,0"
+            VerticalAlignment="Top"
+            ItemsSource="{Binding StatisticsCollection}">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel>
-                        <TextBlock Text="{Binding Item1}" FontSize="20" />
-                        <TextBlock Text="{Binding Item2}" FontSize="14" />
+                        <TextBlock Text="{Binding Item1}" FontSize="18" />
+                        <TextBlock Text="{Binding Item2, StringFormat=0.000}" FontSize="17" />
                     </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <Button Content="اجرا" HorizontalAlignment="Left" Margin="666,412,0,0" VerticalAlignment="Top" Width="75" Click="RunButtonClick"/>
+        <Button Content="اجرا" HorizontalAlignment="Left" Margin="666,450,0,0" VerticalAlignment="Top" Width="75" Click="RunButtonClick"/>
         
-        <xctk:DecimalUpDown Value="{Binding CustomerCount}"  HorizontalAlignment="Left" Margin="755,356,0,0" VerticalAlignment="Top" Width="75" />
-        <TextBlock Text="تعداد مشتریان:" HorizontalAlignment="Left" Margin="666,356,0,0" VerticalAlignment="Top" Height="20" />
+        <TextBox Text="{Binding CustomerCount}"  HorizontalAlignment="Left" Margin="726,423,0,0" VerticalAlignment="Top" Width="75" />
+        <TextBlock Text="تعداد مشتریان:" HorizontalAlignment="Left" Margin="666,425,0,0" VerticalAlignment="Top" Height="20" />
     </Grid>
-</Controls:MetroWindow>
+</Window>

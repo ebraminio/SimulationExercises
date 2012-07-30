@@ -15,23 +15,22 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using MahApps.Metro.Controls;
 using SimulationProject;
 
-namespace RestaurantSimulation
+namespace SimulationProject.UI
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : MetroWindow
+    public partial class MainWindow : Window
     {
-        public ObservableCollection<Customer> CustomerCollection { get; set; }
+        public ObservableCollection<RestaurantCustomer> CustomerCollection { get; set; }
         public ObservableCollection<Tuple<string, double>> StatisticsCollection { get; set; }
         public int CustomerCount { get; set; }
         public MainWindow()
         {
             Thread.CurrentThread.CurrentCulture = new CultureInfo("fa-IR");
-            CustomerCollection = new ObservableCollection<Customer>();
+            CustomerCollection = new ObservableCollection<RestaurantCustomer>();
             StatisticsCollection = new ObservableCollection<Tuple<string, double>>();
             CustomerCount = 20;
 
@@ -71,8 +70,8 @@ namespace RestaurantSimulation
             RemoveAll(StatisticsCollection);
 
             var rs = new RestaurantSimulator(
-                new ItemPicker<int>(new RandomMantissa()),
-                new ItemPicker<int>(new RandomMantissa()));
+                new ItemPicker<int>(new RandomMantissa().GetEnumerator()),
+                new ItemPicker<int>(new RandomMantissa().GetEnumerator()));
 
             enteringDifferencePossibility.ToList()
                 .ForEach(x => rs.AddEnteringDifferencePossibility(x.Item1, x.Item2));
