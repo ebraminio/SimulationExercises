@@ -76,6 +76,7 @@ namespace SimulationProject
 
     public class RestaurantCustomer : Entity
     {
+        public int Id { get; set; }
         public int PreviousArrivalDiff { get; set; }
         public int ArrivalTime { get; set; }
         public int ServiceDuration { get; set; }

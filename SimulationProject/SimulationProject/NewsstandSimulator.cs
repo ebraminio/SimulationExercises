@@ -112,6 +112,7 @@ namespace SimulationProject
 
     public class NewsstandWarehouse : Entity
     {
+        public int Id { get; set; }
         public DayType DayType { get; set; }
         public int Requests { get; set; }
         public int SellingIncome { get; set; }

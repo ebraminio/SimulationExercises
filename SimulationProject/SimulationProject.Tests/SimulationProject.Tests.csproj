@@ -51,7 +51,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="NewsstandSimulatorTest.cs" />
-    <Compile Include="HabilKhabbazSimulatorTest.cs" />
+    <Compile Include="MultiServantQueueSimulatorTest.cs" />
     <Compile Include="RestaurantSimulatorTest.cs" />
     <Compile Include="QueueSimulatorTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

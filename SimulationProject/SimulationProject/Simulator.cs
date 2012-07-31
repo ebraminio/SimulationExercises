@@ -17,8 +17,6 @@ namespace SimulationProject
 
     abstract public class Entity
     {
-        public int Id { get; set; }
-
         public override bool Equals(object obj)
         {
             if (this == obj)
@@ -31,8 +29,8 @@ namespace SimulationProject
 
             foreach (var property in this.GetType().GetProperties())
             {
-                var x = property.GetValue(this, null) as IComparable;
-                var y = property.GetValue(obj, null) as IComparable;
+                var x = property.GetValue(this, null);
+                var y = property.GetValue(obj, null);
 
                 if (x == null || y == null)
                 {
@@ -47,10 +45,7 @@ namespace SimulationProject
 
         public override int GetHashCode()
         {
-            int hash = 37;
-            hash = hash * 23 + base.GetHashCode();
-            hash = hash * 23 + Id.GetHashCode();
-            return hash;
+            return base.GetHashCode();
         }
     }
 

@@ -39,7 +39,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HabilKhabbazSimulator.cs" />
+    <Compile Include="SupplymentSimulator.cs" />
+    <Compile Include="MultiServantQueueSimulator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RestaurantSimulator.cs" />
     <Compile Include="Simulator.cs" />
