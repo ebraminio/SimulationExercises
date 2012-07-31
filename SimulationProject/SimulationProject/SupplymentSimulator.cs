@@ -2,24 +2,30 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SimulationProject
 {
-    public class SupplymentSimulator : Simulator<NewsstandWarehouse>
+    public class SupplymentSimulator : Simulator<SupplymentState>
     {
         private ItemPicker<int> _dailyRequestPicker;
-        private ItemPicker<int> _deliveryTimeoutPicker;
-        private int _warehouseCapacity;
+        private ItemPicker<int> _deliveryTimePicker;
+        private int _supplymentCapacity;
         private int _rechekingPeriod;
-        public SupplymentSimulator(IEnumerable<double> dailyRequestNumbers, IEnumerable<double> deliveryTimeoutRandomNumbers,
-            int warehouseCapacity, int rechekingPeriod)
+        private int _beginningSupply;
+        private int _beginningOrder;
+        private int _beginningOrderDelivery;
+        public SupplymentSimulator(IEnumerable<double> dailyRandomRequestNumbers,
+            IEnumerable<double> deliveryTimeRandomNumbers, int capacity, int rechekingPeriod,
+            int beginningSupply, int beginningOrder, int beginningOrderDelivery)
         {
-            _dailyRequestPicker = new ItemPicker<int>(dailyRequestNumbers.GetEnumerator());
-            _deliveryTimeoutPicker = new ItemPicker<int>(deliveryTimeoutRandomNumbers.GetEnumerator());
+            _dailyRequestPicker = new ItemPicker<int>(dailyRandomRequestNumbers.GetEnumerator());
+            _deliveryTimePicker = new ItemPicker<int>(deliveryTimeRandomNumbers.GetEnumerator());
 
-            _warehouseCapacity = warehouseCapacity;
+            _supplymentCapacity = capacity;
             _rechekingPeriod = rechekingPeriod;
+            _beginningSupply = beginningSupply;
+            _beginningOrder = beginningOrder;
+            _beginningOrderDelivery = beginningOrderDelivery;
         }
 
         public SupplymentSimulator AddDailyRequestPossibility(int dailyRequest, double possibility)
@@ -28,75 +34,112 @@ namespace SimulationProject
             return this;
         }
 
-        public SupplymentSimulator AddDeliveryTimeoutPossibility(int deliveryTimeout, double possibility)
+        public SupplymentSimulator AddDeliveryTimePossibility(int deliveryTimeout, double possibility)
         {
-            _deliveryTimeoutPicker.AddEntityPossibilty(deliveryTimeout, possibility);
+            _deliveryTimePicker.AddEntityPossibilty(deliveryTimeout, possibility);
             return this;
         }
 
-        public override IEnumerator<NewsstandWarehouse> GetEnumerator()
+        public override IEnumerator<SupplymentState> GetEnumerator()
         {
-            yield return null;
-        //    var dayTypeEnumerator = _dailyRequestPicker.GetEnumerator();
+            var dailyRequestEnumerator = _dailyRequestPicker.GetEnumerator();
+            var deliveryTimeEnumerator = _deliveryTimePicker.GetEnumerator();
 
-        //    int dayCount = 0;
-        //    while (dayTypeEnumerator.MoveNext())
-        //    {
-        //        var currentDayType = dayTypeEnumerator.Current;
+            int period = 1;
+            var supply = _beginningSupply;
+            int order = _beginningOrder;
+            int orderDelivery = _beginningOrderDelivery;
+            while (deliveryTimeEnumerator.MoveNext())
+            {
+                int dayInPeriod = 1;
+                int requestsSum = 0;
+                int leakagesSum = 0;
+                while (_rechekingPeriod >= dayInPeriod)
+                {
+                    if (!dailyRequestEnumerator.MoveNext()) yield break;
+                    if (orderDelivery == 0)
+                    {
+                        supply += order;
+                    }
+                    requestsSum += dailyRequestEnumerator.Current;
 
-        //        if (!requestsEnumerators[currentDayType].MoveNext())
-        //            break;
-        //        var currentRequest = requestsEnumerators[currentDayType].Current;
+                    if (_rechekingPeriod == dayInPeriod)
+                    {
+                        orderDelivery = deliveryTimeEnumerator.Current;
+                        order = requestsSum;
+                    }
+                    else
+                    {
+                        orderDelivery--;
+                    }
 
-        //        var remindFromSell = 0;
-        //        var notAvailableNewspaper = 0;
-        //        var realSell = currentRequest;
-        //        if (currentRequest > _warehouseCapacity)
-        //        {
-        //            notAvailableNewspaper = currentRequest - _warehouseCapacity;
-        //            realSell = _warehouseCapacity;
-        //        }
-        //        else if (currentRequest < _warehouseCapacity)
-        //        {
-        //            remindFromSell = _warehouseCapacity - currentRequest;
-        //        }
+                    int endOfDaySupply = supply - dailyRequestEnumerator.Current;
+                    int leakage = 0;
+                    if (supply < dailyRequestEnumerator.Current)
+                    {
+                        leakage = dailyRequestEnumerator.Current - supply;
+                        leakagesSum += leakage;
+                        endOfDaySupply = 0;
+                    }
+                    else
+                    {
+                        if (leakagesSum != 0)
+                        {
+                            endOfDaySupply -= leakagesSum;
+                            leakagesSum = 0;
+                        }
+                    }
 
-        //        dayCount++;
-        //        yield return new NewsstandWarehouse
-        //        {
-        //            Id = dayCount,
-        //            DayType = currentDayType,
-        //            Requests = currentRequest,
-        //            SellingIncome = realSell * _newspaperPriceForSell,
-        //            LostProfit = notAvailableNewspaper * (_newspaperPriceForSell - _newspaperPriceForBuy),
-        //            WasteNewspaperSell = remindFromSell * _wasteNewspaperPrice,
-        //            DailyProfit = (realSell * _newspaperPriceForSell) - (_warehouseCapacity * _newspaperPriceForBuy)
-        //                            - (notAvailableNewspaper * (_newspaperPriceForSell - _newspaperPriceForBuy))
-        //                            + (remindFromSell * _wasteNewspaperPrice)
-        //        };
-        //    }
+                    yield return new SupplymentState
+                    {
+                        Period = period,
+                        DayInPeriod = dayInPeriod,
+                        Supply = supply,
+                        Request = dailyRequestEnumerator.Current,
+                        EndOfDaySupply = endOfDaySupply,
+                        Leakage = leakage,
+                        Order = (_rechekingPeriod == dayInPeriod) ? requestsSum : 0,
+                        OrderDeliveryLeftDays = (orderDelivery > 0) ? orderDelivery : 0,
+                    };
+                    supply = endOfDaySupply;
+                    dayInPeriod++;
+                }
+                period++;
+            }
         }
     }
 
-    public class Supplyment : Entity
+    public class SupplymentState : Entity
     {
         public int Period { get; set; }
         public int DayInPeriod { get; set; }
+        public int Supply { get; set; }
         public int Request { get; set; }
         public int EndOfDaySupply { get; set; }
         public int Leakage { get; set; }
+        public int Order { get; set; }
+        public int OrderDeliveryLeftDays { get; set; }
 
-        public Supplyment() { }
-        public Supplyment(int id)
+        public SupplymentState() { }
+        public SupplymentState(int period, int dayInPeriod, int supply, int request,
+            int endOfDaySupply, int leakage, int order, int orderDeliveryLeftDays)
         {
+            Period = period;
+            DayInPeriod = dayInPeriod;
+            Supply = supply;
+            Request = request;
+            EndOfDaySupply = endOfDaySupply;
+            Leakage = leakage;
+            Order = order;
+            OrderDeliveryLeftDays = orderDeliveryLeftDays;
         }
     }
 
-    public static class SupplymentTools
+    public static class SupplymentStatesTools
     {
-        //public static double TotalProfit(this ICollection<NewsstandWarehouse> warehouse)
-        //{
-        //    return warehouse.Sum(x => x.DailyProfit);
-        //}
+        public static double EndOfDaySupplyAverage(this ICollection<SupplymentState> supplymentStates)
+        {
+            return supplymentStates.Average(x => (double)x.EndOfDaySupply);
+        }
     }
 }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SimulationProject
 {
@@ -29,13 +28,11 @@ namespace SimulationProject
 
             foreach (var property in this.GetType().GetProperties())
             {
-                var x = property.GetValue(this, null);
-                var y = property.GetValue(obj, null);
+                var x = property.GetValue(this);
+                var y = property.GetValue(obj);
 
-                if (x == null || y == null)
-                {
-                    throw new NotSupportedException();
-                }
+                if (x.GetType() != y.GetType())
+                    throw new ArgumentException();
 
                 if (!x.Equals(y))
                     return false;
@@ -126,7 +123,7 @@ namespace SimulationProject
             while (true)
             {
                 _flag = !_flag;
-                yield return _flag ? 0 : 0.99;
+                yield return _flag ? 0 : 1;
             }
         }
 

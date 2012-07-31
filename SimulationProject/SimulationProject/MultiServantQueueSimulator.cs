@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SimulationProject
 {
@@ -47,7 +46,6 @@ namespace SimulationProject
             int customerId = 0;
             while (enteringDifferenceEnumerator.MoveNext())
             {
-                Servant servant;
                 int currentEnter = enteringDifferenceEnumerator.Current;
                 if (firstInQueue == true)
                 {
@@ -58,7 +56,7 @@ namespace SimulationProject
                 reservedQueues = reservedQueues
                     .ToDictionary(x => x.Key, x => (x.Value < currentEnter) ? 0 : x.Value - currentEnter);
 
-                servant = reservedQueues.First(x => x.Value == reservedQueues.Min(y => y.Value)).Key;
+                Servant servant = reservedQueues.First(x => x.Value == reservedQueues.Min(y => y.Value)).Key;
 
                 if (!serviceTimeEnumerators[servant].MoveNext()) break;
 
