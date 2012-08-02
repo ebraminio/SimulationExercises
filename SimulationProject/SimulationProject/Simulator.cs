@@ -22,14 +22,18 @@ namespace SimulationProject
                 return true;
 
             Entity o = obj as Entity;
-            if (obj == null || obj.ToString() == "{DisconnectedItem}")
+            if (obj == null
+                || obj.ToString() == "{DisconnectedItem}"
+                || obj.ToString() == "{DependencyProperty.UnsetValue}"
+                || obj.ToString() == "{NewItemPlaceholder}"
+                || obj.ToString() == "{DataGrid.NewItemPlaceholder}")
                 return false;
 
 
             foreach (var property in this.GetType().GetProperties())
             {
-                var x = property.GetValue(this);
-                var y = property.GetValue(obj);
+                var x = property.GetValue(this, null);
+                var y = property.GetValue(obj, null);
 
                 if (x.GetType() != y.GetType())
                     throw new ArgumentException();

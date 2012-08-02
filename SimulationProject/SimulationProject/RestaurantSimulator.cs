@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
@@ -76,15 +77,32 @@ namespace SimulationProject
 
     public class RestaurantCustomer : Entity
     {
+        [DisplayNameAttribute("مشتری")]
         public int Id { get; set; }
+
+        [DisplayNameAttribute("مدت سپری شده از آخرین ورود (دقیقه)")]
         public int PreviousArrivalDiff { get; set; }
+
+        [DisplayNameAttribute("زمان ورود")]
         public int ArrivalTime { get; set; }
+
+        [DisplayNameAttribute("مدت خدمت‌دهی (دقیقه)")]
         public int ServiceDuration { get; set; }
+
+        [DisplayNameAttribute("زمان شروع خدمت")]
         public int ServiceStart { get; set; }
+
+        [DisplayNameAttribute("زمان ماندن مشتری در صف (دقیقه)")]
         public int WaitingTime { get; set; }
+
+        [DisplayNameAttribute("زمان پایان خدمت")]
         public int ServiceEnd { get; set; }
+
+        [DisplayNameAttribute("مدت ماندن مشتری در سیستم (دقیقه)")]
         public int CustomerInSystemTime { get; set; }
-        public int NoCustomerTime { get; set; } // not related to customer directly
+
+        [DisplayNameAttribute("مدت بیکاری خدمت‌دهنده")]
+        public int NoCustomerTime { get; set; }
 
         public RestaurantCustomer() { }
         public RestaurantCustomer(int id, int previousArrivalDiff, int arrivalTime,
@@ -102,38 +120,43 @@ namespace SimulationProject
             NoCustomerTime = noCustomerTime;
         }
     }
-
-
+    
     public static class RestaurantCustomersTools
     {
+        [DisplayNameAttribute("متوسط مدت انتظار هر مشتری")]
         public static double WaitingTimeAverage(this ICollection<RestaurantCustomer> customers)
         {
             return customers.Average(x => (double)x.WaitingTime);
         }
 
+        [DisplayNameAttribute("احتمال مجبور شدن مشتری به انتظار")]
         public static double WaitedCustomersRatio(this ICollection<RestaurantCustomer> customers)
         {
             return (double)customers.Count(x => x.WaitingTime != 0) /
                 (double)customers.Count();
         }
 
+        [DisplayNameAttribute("نسبت بیکاری خدمت‌دهنده")]
         public static double NoCustomerRatio(this ICollection<RestaurantCustomer> customers)
         {
             return (double)customers.Sum(x => x.NoCustomerTime) /
                 (double)customers.Last().ServiceEnd;
         }
 
+        [DisplayNameAttribute("متوسط مدت خدمت‌دهی")]
         public static double ServiceAverage(this ICollection<RestaurantCustomer> customers)
         {
             return (double)customers.Average(x => (double)x.ServiceDuration);
         }
 
+        [DisplayNameAttribute("متوسط مدت بین هر دو ورود")]
         public static double EnteringDiffAverage(this ICollection<RestaurantCustomer> customers)
         {
             return (double)customers.Sum(x => (double)x.PreviousArrivalDiff) /
                 (double)(customers.Count() - 1);
         }
 
+        [DisplayNameAttribute("متوسط مدت انتظار")]
         public static double WaitingAverage(this ICollection<RestaurantCustomer> customers)
         {
             return customers
@@ -141,6 +164,7 @@ namespace SimulationProject
                 .Average(x => (double)x.WaitingTime);
         }
 
+        [DisplayNameAttribute("متوسط مدت زمان حضور مشتری")]
         public static double CustomerInSystemAverage(this ICollection<RestaurantCustomer> customers)
         {
             return customers

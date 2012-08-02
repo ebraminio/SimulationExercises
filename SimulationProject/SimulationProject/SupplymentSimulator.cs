@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
@@ -111,13 +112,28 @@ namespace SimulationProject
 
     public class SupplymentState : Entity
     {
+        [DisplayNameAttribute("دور")]
         public int Period { get; set; }
+
+        [DisplayNameAttribute("روز")]
         public int DayInPeriod { get; set; }
+
+        [DisplayNameAttribute("موجودی در ابتدای روز")]
         public int Supply { get; set; }
+
+        [DisplayNameAttribute("تقاضا")]
         public int Request { get; set; }
+
+        [DisplayNameAttribute("موجودی در انتهای روز")]
         public int EndOfDaySupply { get; set; }
+
+        [DisplayNameAttribute("مقدار کمبود")]
         public int Leakage { get; set; }
+
+        [DisplayNameAttribute("مقدار سفارش")]
         public int Order { get; set; }
+
+        [DisplayNameAttribute("روزهای مانده تا ورود سفارش")]
         public int OrderDeliveryLeftDays { get; set; }
 
         public SupplymentState() { }

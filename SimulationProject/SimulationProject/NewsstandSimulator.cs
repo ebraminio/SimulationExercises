@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
@@ -111,12 +112,25 @@ namespace SimulationProject
 
     public class NewsstandWarehouse : Entity
     {
+        [DisplayNameAttribute("روز")]
         public int Id { get; set; }
+
+        [DisplayNameAttribute("نوع روز")]
         public DayType DayType { get; set; }
+
+        [DisplayNameAttribute("تقاضا")]
         public int Requests { get; set; }
+
+        [DisplayNameAttribute("درآمد حاصل از فروش")]
         public int SellingIncome { get; set; }
+
+        [DisplayNameAttribute("سود از دست رفته به دلیل فزونی تقاضا")]
         public int LostProfit { get; set; }
+
+        [DisplayNameAttribute("درآمد ناشی از فروش به قیمت باطله")]
         public int WasteNewspaperSell { get; set; }
+
+        [DisplayNameAttribute("سود روزانه")]
         public int DailyProfit { get; set; }
 
         public NewsstandWarehouse() { }
@@ -135,6 +149,7 @@ namespace SimulationProject
 
     public static class NewsstandWarehouseTools
     {
+        [DisplayNameAttribute("سود کل")]
         public static double TotalProfit(this ICollection<NewsstandWarehouse> warehouse)
         {
             return warehouse.Sum(x => x.DailyProfit);
