@@ -6,7 +6,7 @@ using System.Text;
 
 namespace SimulationProject
 {
-    public class RestaurantSimulator : Simulator<RestaurantCustomer>
+    public class RestaurantSimulator : IEnumerable<RestaurantCustomer>
     {
         private ItemPicker<int> _enteringDifference;
         private ItemPicker<int> _serviceTime;
@@ -29,7 +29,7 @@ namespace SimulationProject
             return this;
         }
 
-        public override IEnumerator<RestaurantCustomer> GetEnumerator()
+        public IEnumerator<RestaurantCustomer> GetEnumerator()
         {
             var enteringDifferenceEnumerator = _enteringDifference.GetEnumerator();
             var serviceTimeEnumerator = _serviceTime.GetEnumerator();
@@ -73,9 +73,14 @@ namespace SimulationProject
                 reservedQueue += currentServiceTime;
             }
         }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 
-    public class RestaurantCustomer : Entity
+    public struct RestaurantCustomer
     {
         [DisplayNameAttribute("مشتری")]
         public int Id { get; set; }
@@ -104,10 +109,9 @@ namespace SimulationProject
         [DisplayNameAttribute("مدت بیکاری خدمت‌دهنده")]
         public int NoCustomerTime { get; set; }
 
-        public RestaurantCustomer() { }
         public RestaurantCustomer(int id, int previousArrivalDiff, int arrivalTime,
             int serviceDuration, int serviceStart, int waitingTime, int serviceEnd,
-            int customerInSystemTime, int noCustomerTime)
+            int customerInSystemTime, int noCustomerTime) : this()
         {
             Id = id;
             PreviousArrivalDiff = previousArrivalDiff;

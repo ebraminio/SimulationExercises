@@ -6,7 +6,7 @@ using System.Text;
 
 namespace SimulationProject
 {
-    public class SupplymentSimulator : Simulator<SupplymentState>
+    public class SupplymentSimulator : IEnumerable<SupplymentState>
     {
         private ItemPicker<int> _dailyRequestPicker;
         private ItemPicker<int> _deliveryTimePicker;
@@ -41,7 +41,7 @@ namespace SimulationProject
             return this;
         }
 
-        public override IEnumerator<SupplymentState> GetEnumerator()
+        public IEnumerator<SupplymentState> GetEnumerator()
         {
             var dailyRequestEnumerator = _dailyRequestPicker.GetEnumerator();
             var deliveryTimeEnumerator = _deliveryTimePicker.GetEnumerator();
@@ -108,9 +108,14 @@ namespace SimulationProject
                 period++;
             }
         }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 
-    public class SupplymentState : Entity
+    public struct SupplymentState
     {
         [DisplayNameAttribute("دور")]
         public int Period { get; set; }
@@ -136,9 +141,8 @@ namespace SimulationProject
         [DisplayNameAttribute("روزهای مانده تا ورود سفارش")]
         public int OrderDeliveryLeftDays { get; set; }
 
-        public SupplymentState() { }
         public SupplymentState(int period, int dayInPeriod, int supply, int request,
-            int endOfDaySupply, int leakage, int order, int orderDeliveryLeftDays)
+            int endOfDaySupply, int leakage, int order, int orderDeliveryLeftDays) : this()
         {
             Period = period;
             DayInPeriod = dayInPeriod;

@@ -5,51 +5,6 @@ using System.Text;
 
 namespace SimulationProject
 {
-    abstract public class Simulator<T> : IEnumerable<T> where T : Entity
-    {
-        public abstract IEnumerator<T> GetEnumerator();
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-    }
-
-    abstract public class Entity
-    {
-        public override bool Equals(object obj)
-        {
-            if (this == obj)
-                return true;
-
-            Entity o = obj as Entity;
-            if (obj == null
-                || obj.ToString() == "{DisconnectedItem}"
-                || obj.ToString() == "{DependencyProperty.UnsetValue}"
-                || obj.ToString() == "{NewItemPlaceholder}"
-                || obj.ToString() == "{DataGrid.NewItemPlaceholder}")
-                return false;
-
-
-            foreach (var property in this.GetType().GetProperties())
-            {
-                var x = property.GetValue(this, null);
-                var y = property.GetValue(obj, null);
-
-                if (x.GetType() != y.GetType())
-                    throw new ArgumentException();
-
-                if (!x.Equals(y))
-                    return false;
-            }
-            return true;
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-    }
-
     public class ItemPicker<T> : IEnumerable<T>
     {
         private IEnumerator<double> _mantissaEnumerator;

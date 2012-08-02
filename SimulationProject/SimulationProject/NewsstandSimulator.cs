@@ -6,7 +6,7 @@ using System.Text;
 
 namespace SimulationProject
 {
-    public class NewsstandSimulator : Simulator<NewsstandWarehouse>
+    public class NewsstandSimulator : IEnumerable<NewsstandWarehouse>
     {
         private ItemPicker<DayType> _dayTypePicker;
         private ItemPicker<int> _goodDayRequestPicker;
@@ -58,7 +58,7 @@ namespace SimulationProject
             return this;
         }
 
-        public override IEnumerator<NewsstandWarehouse> GetEnumerator()
+        public IEnumerator<NewsstandWarehouse> GetEnumerator()
         {
             var dayTypeEnumerator = _dayTypePicker.GetEnumerator();
             var requestsEnumerators = new Dictionary<DayType, IEnumerator<int>>();
@@ -103,6 +103,11 @@ namespace SimulationProject
                 };
             }
         }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 
     public enum DayType
@@ -110,7 +115,7 @@ namespace SimulationProject
         Bad, Medium, Good
     }
 
-    public class NewsstandWarehouse : Entity
+    public struct NewsstandWarehouse
     {
         [DisplayNameAttribute("روز")]
         public int Id { get; set; }
@@ -133,9 +138,9 @@ namespace SimulationProject
         [DisplayNameAttribute("سود روزانه")]
         public int DailyProfit { get; set; }
 
-        public NewsstandWarehouse() { }
         public NewsstandWarehouse(int id, DayType dayType, int requests,
             int sellingIncome, int lostProfit, int wasteNewspaperSell, int dailyProfit)
+            : this()
         {
             Id = id;
             DayType = dayType;

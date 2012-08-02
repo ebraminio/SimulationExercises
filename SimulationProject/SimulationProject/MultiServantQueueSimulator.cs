@@ -6,7 +6,7 @@ using System.Text;
 
 namespace SimulationProject
 {
-    public class MultiServantQueueSimulator : Simulator<MultiServantQueueCustomer>
+    public class MultiServantQueueSimulator : IEnumerable<MultiServantQueueCustomer>
     {
         private ItemPicker<int> _enteringDifference;
         private IDictionary<Servant, ItemPicker<int>> _serviceTimePickers;
@@ -37,7 +37,7 @@ namespace SimulationProject
             return this;
         }
 
-        public override IEnumerator<MultiServantQueueCustomer> GetEnumerator()
+        public IEnumerator<MultiServantQueueCustomer> GetEnumerator()
         {
             var enteringDifferenceEnumerator = _enteringDifference.GetEnumerator();
             var serviceTimeEnumerators = _serviceTimePickers.ToDictionary(x => x.Key, x => x.Value.GetEnumerator());
@@ -80,9 +80,14 @@ namespace SimulationProject
                 reservedQueues[servant] += currentServiceTime;
             }
         }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 
-    public class MultiServantQueueCustomer : Entity
+    public struct MultiServantQueueCustomer
     {
         [DisplayNameAttribute("مشتری")]
         public int Id { get; set; }
@@ -108,10 +113,9 @@ namespace SimulationProject
         [DisplayNameAttribute("مدت انتظار در صف")]
         public int WaitingTime { get; set; }
         
-        public MultiServantQueueCustomer() { }
         public MultiServantQueueCustomer(int id, int previousArrivalDiff, int arrivalTime,
             Servant servant, int serviceStart, int serviceDuration, int serviceEnd,
-            int waitingTime)
+            int waitingTime) : this()
         {
             Id = id;
             PreviousArrivalDiff = previousArrivalDiff;
