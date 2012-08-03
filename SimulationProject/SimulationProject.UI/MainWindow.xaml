@@ -7,7 +7,19 @@
     Width="1000"
     FlowDirection="RightToLeft"
     Icon="waiting.ico"
-    FontFamily="Iranian Sans">
+    FontFamily="Nazli"
+    FontSize="13">
+    <Window.Resources>
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="ContentTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <TextBlock TextWrapping="Wrap" Text="{Binding}" Width="55" Height="60" TextAlignment="Center"></TextBlock>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
     <Grid Name="LayoutRoot">
         
         <DataGrid
@@ -26,7 +38,7 @@
                 <DataTemplate>
                     <StackPanel>
                         <TextBlock Text="{Binding Item1}" FontSize="18" />
-                        <TextBlock Text="{Binding Item2, StringFormat=0.000}" FontSize="17" />
+                        <TextBlock Text="{Binding Item2, StringFormat=0.###}" FontSize="17" />
                     </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>

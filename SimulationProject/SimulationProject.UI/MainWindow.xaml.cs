@@ -198,13 +198,13 @@ namespace SimulationProject.UI
 
             dataGrid.ItemsSource = states;
 
-            statisticsListView.ItemsSource = null; //SimulatorStatistics(typeof(), states);
+            statisticsListView.ItemsSource = SimulatorStatistics(typeof(SupplymentStatesTools), states);
         }
         #endregion
 
-        private List<Tuple<string, string>> SimulatorStatistics(Type T, object customers)
+        private List<Tuple<string, object>> SimulatorStatistics(Type T, object customers)
         {
-            var result = new List<Tuple<string, string>>();
+            var result = new List<Tuple<string, object>>();
             foreach (var method in T.GetMethods())
             {
                 var attribute = method
@@ -214,9 +214,9 @@ namespace SimulationProject.UI
 
                 if (attribute != null)
                 {
-                    result.Add(new Tuple<string, string>(
+                    result.Add(new Tuple<string, object>(
                        attribute.DisplayName,
-                       method.Invoke(null, new[] { (object)customers }).ToString()));
+                       method.Invoke(null, new[] { (object)customers })));
                 }
             }
             return result;

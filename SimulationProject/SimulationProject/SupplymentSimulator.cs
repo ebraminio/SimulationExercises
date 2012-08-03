@@ -157,6 +157,7 @@ namespace SimulationProject
 
     public static class SupplymentStatesTools
     {
+        [DisplayNameAttribute("متوسط موجودی در انتهای روز")]
         public static double EndOfDaySupplyAverage(this ICollection<SupplymentState> supplymentStates)
         {
             return supplymentStates.Average(x => (double)x.EndOfDaySupply);
