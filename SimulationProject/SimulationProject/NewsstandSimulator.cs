@@ -117,25 +117,25 @@ namespace SimulationProject
 
     public struct NewsstandWarehouse
     {
-        [DisplayNameAttribute("روز")]
+        [DisplayName("روز")]
         public int Id { get; set; }
 
-        [DisplayNameAttribute("نوع روز")]
+        [DisplayName("نوع روز")]
         public DayType DayType { get; set; }
 
-        [DisplayNameAttribute("تقاضا")]
+        [DisplayName("تقاضا")]
         public int Requests { get; set; }
 
-        [DisplayNameAttribute("درآمد حاصل از فروش")]
+        [DisplayName("درآمد حاصل از فروش")]
         public int SellingIncome { get; set; }
 
-        [DisplayNameAttribute("سود از دست رفته به دلیل فزونی تقاضا")]
+        [DisplayName("سود از دست رفته به دلیل فزونی تقاضا")]
         public int LostProfit { get; set; }
 
-        [DisplayNameAttribute("درآمد ناشی از فروش به قیمت باطله")]
+        [DisplayName("درآمد ناشی از فروش به قیمت باطله")]
         public int WasteNewspaperSell { get; set; }
 
-        [DisplayNameAttribute("سود روزانه")]
+        [DisplayName("سود روزانه")]
         public int DailyProfit { get; set; }
 
         public NewsstandWarehouse(int id, DayType dayType, int requests,
@@ -154,7 +154,7 @@ namespace SimulationProject
 
     public static class NewsstandWarehouseTools
     {
-        [DisplayNameAttribute("سود کل")]
+        [DisplayName("سود کل")]
         public static double TotalProfit(this ICollection<NewsstandWarehouse> warehouse)
         {
             return warehouse.Sum(x => x.DailyProfit);

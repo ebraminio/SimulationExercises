@@ -82,31 +82,31 @@ namespace SimulationProject
 
     public struct RestaurantCustomer
     {
-        [DisplayNameAttribute("مشتری")]
+        [DisplayName("مشتری")]
         public int Id { get; set; }
 
-        [DisplayNameAttribute("مدت سپری شده از آخرین ورود (دقیقه)")]
+        [DisplayName("مدت سپری شده از آخرین ورود (دقیقه)")]
         public int PreviousArrivalDiff { get; set; }
 
-        [DisplayNameAttribute("زمان ورود")]
+        [DisplayName("زمان ورود")]
         public int ArrivalTime { get; set; }
 
-        [DisplayNameAttribute("مدت خدمت‌دهی (دقیقه)")]
+        [DisplayName("مدت خدمت‌دهی (دقیقه)")]
         public int ServiceDuration { get; set; }
 
-        [DisplayNameAttribute("زمان شروع خدمت")]
+        [DisplayName("زمان شروع خدمت")]
         public int ServiceStart { get; set; }
 
-        [DisplayNameAttribute("زمان ماندن مشتری در صف (دقیقه)")]
+        [DisplayName("زمان ماندن مشتری در صف (دقیقه)")]
         public int WaitingTime { get; set; }
 
-        [DisplayNameAttribute("زمان پایان خدمت")]
+        [DisplayName("زمان پایان خدمت")]
         public int ServiceEnd { get; set; }
 
-        [DisplayNameAttribute("مدت ماندن مشتری در سیستم (دقیقه)")]
+        [DisplayName("مدت ماندن مشتری در سیستم (دقیقه)")]
         public int CustomerInSystemTime { get; set; }
 
-        [DisplayNameAttribute("مدت بیکاری خدمت‌دهنده")]
+        [DisplayName("مدت بیکاری خدمت‌دهنده")]
         public int NoCustomerTime { get; set; }
 
         public RestaurantCustomer(int id, int previousArrivalDiff, int arrivalTime,
@@ -127,52 +127,51 @@ namespace SimulationProject
     
     public static class RestaurantCustomersTools
     {
-        [DisplayNameAttribute("متوسط مدت انتظار هر مشتری")]
+        [DisplayName("متوسط مدت انتظار هر مشتری")]
         public static double WaitingTimeAverage(this ICollection<RestaurantCustomer> customers)
         {
-            return customers.Average(x => (double)x.WaitingTime);
+            return customers.AverageOrZero(x => (double)x.WaitingTime);
         }
 
-        [DisplayNameAttribute("احتمال مجبور شدن مشتری به انتظار")]
+        [DisplayName("احتمال مجبور شدن مشتری به انتظار")]
         public static double WaitedCustomersRatio(this ICollection<RestaurantCustomer> customers)
         {
             return (double)customers.Count(x => x.WaitingTime != 0) /
                 (double)customers.Count();
         }
 
-        [DisplayNameAttribute("نسبت بیکاری خدمت‌دهنده")]
+        [DisplayName("نسبت بیکاری خدمت‌دهنده")]
         public static double NoCustomerRatio(this ICollection<RestaurantCustomer> customers)
         {
             return (double)customers.Sum(x => x.NoCustomerTime) /
-                (double)customers.Last().ServiceEnd;
+                (double)customers.LastOrDefault().ServiceEnd;
         }
 
-        [DisplayNameAttribute("متوسط مدت خدمت‌دهی")]
+        [DisplayName("متوسط مدت خدمت‌دهی")]
         public static double ServiceAverage(this ICollection<RestaurantCustomer> customers)
         {
-            return (double)customers.Average(x => (double)x.ServiceDuration);
+            return (double)customers.AverageOrZero(x => (double)x.ServiceDuration);
         }
 
-        [DisplayNameAttribute("متوسط مدت بین هر دو ورود")]
+        [DisplayName("متوسط مدت بین هر دو ورود")]
         public static double EnteringDiffAverage(this ICollection<RestaurantCustomer> customers)
         {
             return (double)customers.Sum(x => (double)x.PreviousArrivalDiff) /
                 (double)(customers.Count() - 1);
         }
 
-        [DisplayNameAttribute("متوسط مدت انتظار")]
+        [DisplayName("متوسط مدت انتظار")]
         public static double WaitingAverage(this ICollection<RestaurantCustomer> customers)
         {
             return customers
                 .Where(x => x.WaitingTime != 0)
-                .Average(x => (double)x.WaitingTime);
+                .AverageOrZero(x => (double)x.WaitingTime);
         }
 
-        [DisplayNameAttribute("متوسط مدت زمان حضور مشتری")]
+        [DisplayName("متوسط مدت زمان حضور مشتری")]
         public static double CustomerInSystemAverage(this ICollection<RestaurantCustomer> customers)
         {
-            return customers
-                .Average(x => x.CustomerInSystemTime);
+            return customers.AverageOrZero(x => x.CustomerInSystemTime);
         }
     }
 }

@@ -85,8 +85,8 @@ namespace SimulationProject.Tests
                 customers.Add(simulatorEnumerator.Current);
             }
 
-            Assert.AreEqual(.90, Math.Round(customers.ServantBusyRatio(habil), 2));
-            Assert.AreEqual(.69, Math.Round(customers.ServantBusyRatio(khabbaz), 2));
+            Assert.AreEqual(.90, Math.Round(customers.ServantBusyAverage(habil), 2));
+            Assert.AreEqual(.69, Math.Round(customers.ServantBusyAverage(khabbaz), 2));
             Assert.AreEqual(.35, Math.Round(customers.WaitedCustomersRatio(), 2));
             Assert.AreEqual(.42, Math.Round(customers.WaitingTimeAverage(), 2));
             Assert.AreEqual(1.22, Math.Round(customers.WaitedCustomersWaitingTimeAverage(), 2));

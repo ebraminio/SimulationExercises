@@ -89,28 +89,28 @@ namespace SimulationProject
 
     public struct MultiServantQueueCustomer
     {
-        [DisplayNameAttribute("مشتری")]
+        [DisplayName("مشتری")]
         public int Id { get; set; }
 
-        [DisplayNameAttribute("مدت‌های بین دو ورود")]
+        [DisplayName("مدت‌های بین دو ورود")]
         public int PreviousArrivalDiff { get; set; }
 
-        [DisplayNameAttribute("زمان ورود بر حسب زمان شبیه‌سازی")]
+        [DisplayName("زمان ورود بر حسب زمان شبیه‌سازی")]
         public int ArrivalTime { get; set; }
 
-        [DisplayNameAttribute("خدمت‌رسان")]
+        [DisplayName("خدمت‌رسان")]
         public Servant Servant { get; set; }
 
-        [DisplayNameAttribute("زمان شروع خدمت")]
+        [DisplayName("زمان شروع خدمت")]
         public int ServiceStart { get; set; }
 
-        [DisplayNameAttribute("مدت‌های خدمت‌دهی")]
+        [DisplayName("مدت‌های خدمت‌دهی")]
         public int ServiceDuration { get; set; }
 
-        [DisplayNameAttribute("زمان پایان خدمت")]
+        [DisplayName("زمان پایان خدمت")]
         public int ServiceEnd { get; set; }
 
-        [DisplayNameAttribute("مدت انتظار در صف")]
+        [DisplayName("مدت انتظار در صف")]
         public int WaitingTime { get; set; }
         
         public MultiServantQueueCustomer(int id, int previousArrivalDiff, int arrivalTime,
@@ -140,37 +140,62 @@ namespace SimulationProject
 
     public static class MultiServantQueueTools
     {
-        [DisplayNameAttribute("مدت خدمت‌دهی خدمت‌کاران")]
-        public static string ServantsBusyRatio(this ICollection<MultiServantQueueCustomer> customers)
+        [DisplayName("میانگین مدت خدمت‌دهی خدمت‌کاران")]
+        public static string ServantsBusyAverage(this ICollection<MultiServantQueueCustomer> customers)
         {
             var stats = customers.Select(x => x.Servant).Distinct().Select(
-                x => string.Format("{0}: {1:0.000}", x.Name, customers.ServantBusyRatio(x)));
+                x => string.Format("{0}: {1:0.###}", x.Name, customers.ServantBusyAverage(x)));
             return string.Join("، ", stats);
         }
 
-        public static double ServantBusyRatio(this ICollection<MultiServantQueueCustomer> customers, Servant servant)
+        public static double ServantBusyAverage(this ICollection<MultiServantQueueCustomer> customers, Servant servant)
         {
             return (double)customers.Where(x => x.Servant == servant).Sum(x => x.ServiceDuration) /
                 (double)customers.Max(x => x.ServiceEnd);
         }
 
-        [DisplayNameAttribute("نسبت منتظرشدگان")]
+        [DisplayName("نسبت منتظرشدگان")]
         public static double WaitedCustomersRatio(this ICollection<MultiServantQueueCustomer> customers)
         {
             return (double)customers.Count(x => x.WaitingTime != 0) /
                 (double)customers.Count();
         }
 
-        [DisplayNameAttribute("متوسط مدت انتظار")]
+        [DisplayName("متوسط مدت انتظار")]
         public static double WaitingTimeAverage(this ICollection<MultiServantQueueCustomer> customers)
         {
-            return customers.Average(x => (double)x.WaitingTime);
+            return customers.AverageOrZero(x => (double)x.WaitingTime);
         }
 
-        [DisplayNameAttribute("متوسط مدت انتظار بین منتظران")]
+        [DisplayName("متوسط مدت انتظار بین منتظران")]
         public static double WaitedCustomersWaitingTimeAverage(this ICollection<MultiServantQueueCustomer> customers)
         {
-            return customers.Where(x => x.WaitingTime != 0).Average(x => (double)x.WaitingTime);
+            return customers.Where(x => x.WaitingTime != 0).AverageOrZero(x => (double)x.WaitingTime);
+        }
+
+        [DisplayName("مدت انتظار در صف")]
+        public static double WaitedCustomersWaitingTime(this ICollection<MultiServantQueueCustomer> customers)
+        {
+            return customers.Where(x => x.WaitingTime != 0).Sum(x => (double)x.WaitingTime);
+        }
+
+        [DisplayName("مدت خدمت‌دهی خدمت‌کاران")]
+        public static string ServantsBusy(this ICollection<MultiServantQueueCustomer> customers)
+        {
+            var stats = customers.Select(x => x.Servant).Distinct().Select(
+                x => string.Format("{0}: {1}", x.Name, customers.ServantBusy(x)));
+            return string.Join("، ", stats);
+        }
+
+        public static double ServantBusy(this ICollection<MultiServantQueueCustomer> customers, Servant servant)
+        {
+            return (double)customers.Where(x => x.Servant == servant).Sum(x => x.ServiceDuration);
+        }
+
+        [DisplayName("بیشترین تأخیر بین مشتریان")]
+        public static double MaxWaitingTime(this ICollection<MultiServantQueueCustomer> customers)
+        {
+            return customers.Max(x => x.WaitingTime);
         }
     }
 }

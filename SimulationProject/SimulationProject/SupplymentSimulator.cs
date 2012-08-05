@@ -117,28 +117,28 @@ namespace SimulationProject
 
     public struct SupplymentState
     {
-        [DisplayNameAttribute("دور")]
+        [DisplayName("دور")]
         public int Period { get; set; }
 
-        [DisplayNameAttribute("روز")]
+        [DisplayName("روز")]
         public int DayInPeriod { get; set; }
 
-        [DisplayNameAttribute("موجودی در ابتدای روز")]
+        [DisplayName("موجودی در ابتدای روز")]
         public int Supply { get; set; }
 
-        [DisplayNameAttribute("تقاضا")]
+        [DisplayName("تقاضا")]
         public int Request { get; set; }
 
-        [DisplayNameAttribute("موجودی در انتهای روز")]
+        [DisplayName("موجودی در انتهای روز")]
         public int EndOfDaySupply { get; set; }
 
-        [DisplayNameAttribute("مقدار کمبود")]
+        [DisplayName("مقدار کمبود")]
         public int Leakage { get; set; }
 
-        [DisplayNameAttribute("مقدار سفارش")]
+        [DisplayName("مقدار سفارش")]
         public int Order { get; set; }
 
-        [DisplayNameAttribute("روزهای مانده تا ورود سفارش")]
+        [DisplayName("روزهای مانده تا ورود سفارش")]
         public int OrderDeliveryLeftDays { get; set; }
 
         public SupplymentState(int period, int dayInPeriod, int supply, int request,
@@ -157,10 +157,10 @@ namespace SimulationProject
 
     public static class SupplymentStatesTools
     {
-        [DisplayNameAttribute("متوسط موجودی در انتهای روز")]
+        [DisplayName("متوسط موجودی در انتهای روز")]
         public static double EndOfDaySupplyAverage(this ICollection<SupplymentState> supplymentStates)
         {
-            return supplymentStates.Average(x => (double)x.EndOfDaySupply);
+            return supplymentStates.AverageOrZero(x => (double)x.EndOfDaySupply);
         }
     }
 }

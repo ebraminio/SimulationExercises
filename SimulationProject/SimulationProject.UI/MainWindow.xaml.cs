@@ -40,6 +40,7 @@ namespace SimulationProject.UI
                 "اتورستوران هابیل و خباز",
                 "روزنامه فروش",
                 "شبیه‌سازی سیستم موجودی",
+                "روزنامه فروش در روز",
             };
             StatisticsCollection = new ObservableCollection<Tuple<string, double>>();
 
@@ -75,6 +76,9 @@ namespace SimulationProject.UI
                     break;
                 case 3:
                     SupplymentSimulation();
+                    break;
+                case 4:
+                    NewsstandOnDifferentDays();
                     break;
                 default:
                     dataGrid.ItemsSource = null;
@@ -200,6 +204,66 @@ namespace SimulationProject.UI
 
             statisticsListView.ItemsSource = SimulatorStatistics(typeof(SupplymentStatesTools), states);
         }
+
+        private void NewsstandOnDifferentDays()
+        {
+            var testLength = CustomerCount;
+            var list = new List<AnnotatedPair<double, double>>();
+
+            var dayTypeRandomNumbers = new RandomMantissa().Take(testLength).ToList();
+            var requestsRandomNumbers = new RandomMantissa().Take(testLength).ToList();
+
+            Enumerable.Range(1, 12).AsParallel().ForAll(i =>
+            {
+                var simulator = new NewsstandSimulator(dayTypeRandomNumbers, requestsRandomNumbers,
+                    i * 10, 13, 20, 2);
+
+                simulator
+                    .AddDayTypePossibility(DayType.Good, .35)
+                    .AddDayTypePossibility(DayType.Medium, .45)
+                    .AddDayTypePossibility(DayType.Bad, .20)
+
+                    .AddRequestPossibilityOnDayType(DayType.Good, 40, .03)
+                    .AddRequestPossibilityOnDayType(DayType.Good, 50, .05)
+                    .AddRequestPossibilityOnDayType(DayType.Good, 60, .15)
+                    .AddRequestPossibilityOnDayType(DayType.Good, 70, .20)
+                    .AddRequestPossibilityOnDayType(DayType.Good, 80, .35)
+                    .AddRequestPossibilityOnDayType(DayType.Good, 90, .15)
+                    .AddRequestPossibilityOnDayType(DayType.Good, 100, .07)
+
+                    .AddRequestPossibilityOnDayType(DayType.Medium, 40, .10)
+                    .AddRequestPossibilityOnDayType(DayType.Medium, 50, .18)
+                    .AddRequestPossibilityOnDayType(DayType.Medium, 60, .40)
+                    .AddRequestPossibilityOnDayType(DayType.Medium, 70, .20)
+                    .AddRequestPossibilityOnDayType(DayType.Medium, 80, .08)
+                    .AddRequestPossibilityOnDayType(DayType.Medium, 90, .04)
+                    .AddRequestPossibilityOnDayType(DayType.Medium, 100, .00)
+
+                    .AddRequestPossibilityOnDayType(DayType.Bad, 40, .44)
+                    .AddRequestPossibilityOnDayType(DayType.Bad, 50, .22)
+                    .AddRequestPossibilityOnDayType(DayType.Bad, 60, .16)
+                    .AddRequestPossibilityOnDayType(DayType.Bad, 70, .12)
+                    .AddRequestPossibilityOnDayType(DayType.Bad, 80, .06)
+                    .AddRequestPossibilityOnDayType(DayType.Bad, 90, .00)
+                    .AddRequestPossibilityOnDayType(DayType.Bad, 100, .00);
+
+                var states = simulator.Take(testLength).ToList();
+
+                lock (list)
+                {
+                    list.Add(new AnnotatedPair<double, double>
+                        {
+                            Item1 = i * 10,
+                            Item2 = states.TotalProfit()
+                        });
+                }
+            });
+
+            dataGrid.ItemsSource = list;
+
+            var result = new Tuple<string, double>("بهترین حالت در شبیه‌سازی", list.First(x => x.Item2 == list.Max(y => y.Item2)).Item1);
+            statisticsListView.ItemsSource = new[] { result };
+        }
         #endregion
 
         private List<Tuple<string, object>> SimulatorStatistics(Type T, object customers)
@@ -263,5 +327,15 @@ namespace SimulationProject.UI
                 e.Column.Header = displayName;
             }
         }
+    }
+
+
+    public class AnnotatedPair<T1, T2>
+    {
+        [DisplayName("تعداد روزنامه‌ها")]
+        public T1 Item1 { get; set; }
+
+        [DisplayName("سود کل")]
+        public T2 Item2 { get; set; }
     }
 }

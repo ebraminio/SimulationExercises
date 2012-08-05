@@ -91,4 +91,17 @@ namespace SimulationProject
             return GetEnumerator();
         }
     }
+
+    public static class SimulatorTools
+    {
+        public static double AverageOrZero<TSource>(this IEnumerable<TSource> source, Func<TSource, double> selector)
+        {
+            if (source.Count() == 0)
+            {
+                return 0;
+            }
+
+            return source.Average(selector);
+        }
+    }
 }
